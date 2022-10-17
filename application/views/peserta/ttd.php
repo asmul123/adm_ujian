@@ -32,7 +32,7 @@
                                 <div class="auth-form">
                                     <h4 class="text-center mb-4">Tanda Tangan -> Set -> Simpan</h4>
                                     <?= $this->session->flashdata('pesan'); ?>
-                                    <form action="<?= base_url() ?>partisipant/savepresent" method="post">
+                                    <form action="<?= base_url() ?>peserta/savedh" method="post">
                                         <div class="form-group">
 
                                             <!-- Signature area -->
@@ -40,7 +40,7 @@
                                             <div id="signature"></div>
                                             <input type='button' id='click' value='Set' class="btn btn-primary"><br>
                                             <input type="hidden" id='output' name="ttd"><br />
-                                            <input type="hidden" name="task_id" value="<?= $task_id ?>"><br />
+                                            <input type="hidden" name="ba_id" value="<?= $ba_id ?>"><br />
 
                                             <!-- Preview image -->
                                             <img src='' id='sign_prev' style='display: none;' />

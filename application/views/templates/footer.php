@@ -76,11 +76,42 @@
 <script src="<?= base_url(); ?>public/vendor/select2/js/select2.full.min.js"></script>
 <script src="<?= base_url(); ?>public/js/plugins-init/select2-init.js"></script>
 
+<!-- Clockpicker init -->
+<script src="<?= base_url(); ?>public/js/plugins-init/clock-picker-init.js"></script>
+
 <!-- Summernote -->
 <script src="<?= base_url(); ?>public/vendor/summernote/js/summernote.min.js"></script>
 <!-- Summernote init -->
 <script src="<?= base_url(); ?>public/js/plugins-init/summernote-init.js"></script>
+<!-- <script type="text/javascript">
+    $(document).ready(function() {
 
+        $('#ruang').change(function() {
+            var id = $(this).val();
+            $.ajax({
+                url: "<?php echo base_url('pengawas/get_kelas'); ?>",
+                method: "POST",
+                data: {
+                    id: id
+                },
+                async: true,
+                dataType: 'json',
+                success: function(data) {
+
+                    var html = '<option value="">Pilih Kelas</option>';
+                    var i;
+                    for (i = 0; i < data.length; i++) {
+                        html += '<option value=' + data[i].kelas + '>' + data[i].kelas + '</option>';
+                    }
+                    $('#kelas').html(html);
+
+                }
+            });
+            return false;
+        });
+
+    });
+</script> -->
 </body>
 
 </html>

@@ -14,10 +14,10 @@ class Login extends CI_Controller
 				redirect('mentor');
 			} else
 			if ($this->session->userdata('role_id') == 3) {
-				redirect('dudika');
+				redirect('peserta');
 			} else
 			if ($this->session->userdata('role_id') == 4) {
-				redirect('partisipant');
+				redirect('pengawas');
 			}
 		}
 		$this->load->library('form_validation');
@@ -68,7 +68,7 @@ class Login extends CI_Controller
 					'role_id' => $users['role_id']
 				];
 				$this->session->set_userdata($data);
-				redirect('partisipant');
+				redirect('pengawas');
 			} else {
 				$this->session->set_flashdata('pesan', '<div class="alert alert-danger" role="alert">Kata Sandi anda salah</div>');
 				redirect('login');

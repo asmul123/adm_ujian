@@ -18,6 +18,8 @@
     <link href="<?= base_url(); ?>public/vendor/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet">
 
 
+    <!-- Clockpicker -->
+    <link href="<?= base_url(); ?>public/vendor/clockpicker/css/bootstrap-clockpicker.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url(); ?>public/vendor/select2/css/select2.min.css">
     <!-- Summernote -->
     <link href="<?= base_url(); ?>public/vendor/summernote/summernote.css" rel="stylesheet">
@@ -78,7 +80,7 @@
                         <ul class="navbar-nav header-right">
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="#" role="button" data-toggle="dropdown">
-                                    <i class="mdi mdi-account"></i> <?= $partisipant['name'] ?>
+                                    <i class="mdi mdi-account"></i> <?= $pengguna['name'] ?>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
                                     <a href="<?= base_url(); ?>akun" class="dropdown-item">
