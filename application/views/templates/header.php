@@ -109,7 +109,7 @@
             <div class="quixnav-scroll">
                 <ul class="metismenu" id="menu">
                     <li class="nav-label first">Main Menu</li>
-                    <li><a href="<?= base_url(); ?>partisipant" aria-expanded="false"><i class="icon icon-app-store"></i><span class="nav-text">Beranda</span></a></li>
+                    <li><a href="<?= base_url(); ?>pengawas" aria-expanded="false"><i class="icon icon-app-store"></i><span class="nav-text">Beranda</span></a></li>
                     <li><a href="<?= base_url(); ?>keluar" aria-expanded="false"><i class="icon-power"></i><span class="nav-text">Keluar</span></a></li>
                 </ul>
             </div>

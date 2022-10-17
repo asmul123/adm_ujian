@@ -127,7 +127,7 @@
                                     </tr>
                                 </thead>
                                 <?php
-                                $allba = $this->Pengawas_model->getBAPengawas($pengawas['id']);
+                                $allba = $this->Pengawas_model->getBAPengawas($pengguna['id']);
                                 ?>
                                 <tbody>
                                     <?php
@@ -147,7 +147,7 @@
                                             <td><?= $jmlpes ?></td>
                                             <td><?= $jmlhadir ?></td>
                                             <td><?= $jmlabsen ?></td>
-                                            <td><?= $jmlabsen ?></td>
+                                            <td><?= $jmlpres ?></td>
                                             <td>
                                                 <?php
                                                 if ($ab['ttd'] != "") {
