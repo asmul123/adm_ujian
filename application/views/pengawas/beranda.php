@@ -23,7 +23,7 @@
                     <div class="card-header">
                         <h4 class="card-title">Daftar Berita Acara</h4>
                         <a href="#" data-toggle="modal" data-target="#isiba" class="btn btn-rounded btn-primary"><span class="btn-icon-left text-primary"><i class="fa fa-plus color-primary"></i>
-                            </span>Tambah</a>
+                            </span>Baru</a>
                         <div class="modal fade" id="isiba">
                             <div class="modal-dialog modal-lg" role="document">
                                 <form action="<?= base_url() ?>pengawas/addba" method="post" enctype="multipart/form-data">
