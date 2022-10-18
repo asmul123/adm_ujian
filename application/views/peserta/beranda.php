@@ -43,7 +43,7 @@
                                 <?php
                                 $no = 0;
                                 foreach ($allba as $ab) :
-                                    $dh = $this->Peserta_model->getPresentPeserta($ab['id']);
+                                    $dh = $this->Peserta_model->getPresentPeserta($ab['id'], $peserta['id_peserta']);
                                 ?>
                                     <tr>
                                         <td><?= ++$no ?></td>

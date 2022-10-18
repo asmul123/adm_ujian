@@ -18,11 +18,12 @@ class Peserta_model extends CI_model
         $this->db->where('ruang', $ruang);
         return $this->db->get()->result_array();
     }
-    public function getPresentPeserta($idba)
+    public function getPresentPeserta($idba, $idpes)
     {
         $this->db->select('*');
         $this->db->from('daftar_hadir');
         $this->db->where('id_ba', $idba);
+        $this->db->where('id_peserta', $idpes);
         return $this->db->get()->row_array();
     }
     public function getRuangPeserta()
