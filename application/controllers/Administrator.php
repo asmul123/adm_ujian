@@ -10,18 +10,19 @@ class Administrator extends CI_Controller
 			redirect('login');
 		}
 		if ($this->session->userdata('role_id') == 4) {
-			redirect('partisipant');
+			redirect('pengawas');
 		} else
 		if ($this->session->userdata('role_id') == 2) {
 			redirect('mentor');
 		} else
 		if ($this->session->userdata('role_id') == 3) {
-			redirect('dudika');
+			redirect('peserta');
 		}
 		$this->load->helper('tgl_indo');
 		// $this->load->helper('sem_tapel');
 		$this->load->library('form_validation');
-		$this->load->model('Partisipant_model');
+		$this->load->library('Pdf'); // MEMANGGIL LIBRARY YANG KITA BUAT TADI
+		$this->load->model('Admin_model');
 	}
 
 	/**
@@ -41,165 +42,136 @@ class Administrator extends CI_Controller
 	 */
 	public function index()
 	{
-		$data['partisipant'] = $this->Partisipant_model->getBioPartisipant($this->session->userdata('email'));
+		$data['pengguna'] = $this->Admin_model->getBioPengawas($this->session->userdata('email'));
 		$data['judul'] = 'Halaman Beranda';
 		$this->load->view('templates/header', $data);
 		$this->load->view('administrator/beranda', $data);
 		$this->load->view('templates/footer');
 	}
-	public function present($task_id)
+	public function cetakba($id)
 	{
-		$data['task_id'] = $task_id;
-		$data['partisipant'] = $this->Partisipant_model->getBioPartisipant($this->session->userdata('email'));
-		$data['judul'] = 'Halaman Presensi';
-		$this->load->view('administrator/ttd', $data);
-	}
-	public function savepresent()
-	{
-		$ttd = $this->input->post('ttd');
-		$task_id = $this->input->post('task_id');
-		if ($ttd) {
-			$data = [
-				'task_id' => $task_id,
-				'signature' => $ttd,
-			];
-			$this->db->insert('absenses', $data);
-			$this->session->set_flashdata('pesan', '<div class="alert alert-success" role="alert">Data Anda Berhasil di Simpan</div>');
-			redirect('administrator');
-		}
-	}
-	public function atpadd()
-	{
-		$data['partisipant'] = $this->Partisipant_model->getBioPartisipant($this->session->userdata('email'));
-		if (empty($_FILES['atp']['name'])) {
-			$this->form_validation->set_rules('atp', 'Dukumen', 'required');
-		}
-		if ($this->form_validation->run() == false) {
-			$data['judul'] = 'Halaman Tambah Jurnal';
-			$this->load->view('templates/header', $data);
-			$this->load->view('administrator/beranda', $data);
-			$this->load->view('templates/footer');
-		} else {
-			$this->addatp();
-		}
-	}
-	public function addatp()
-	{
-		$task_id = $this->input->post('task_id');
-		$fileName = basename($_FILES["atp"]["name"]);
-		$fileType = pathinfo($fileName, PATHINFO_EXTENSION);
-		$allowTypes = array('pdf', 'docx', 'PDF', 'DOCX', 'zip', 'ZIP', 'rar', 'RAR');
+		if ($id) {
+			$databa = $this->Admin_model->getBAbyID($id);
+			$splittgl = explode('-', $databa['tanggal']);
+			$jmlpes = $this->Admin_model->getCountPeserta($databa['kelas'], $databa['ruang']);
+			$pesertaabsen = explode("#", $databa['absen']);
+			$jmlabsen = count($pesertaabsen) - 1;
+			$jmlhadir = $jmlpes - $jmlabsen;
+			$pdf = new FPDF('P', 'mm', array(210, 330));
+			$pdf->SetTitle('Berita Acara PTS ' . $databa['mapel']);
+			$pdf->AddPage();
+			$pdf->Image(base_url() . 'public/images/kop.png', 12, 10, 185);
+			$pdf->SetFont('Arial', 'B', 14);
+			$pdf->SetFont('');
+			$pdf->Ln(3);
+			$pdf->Cell(19);
+			$pdf->Cell(185, 2, 'PEMERINTAH DAERAH PROVINSI JAWA BARAT', 0, 1, 'C');
+			$pdf->Ln(4);
+			$pdf->Cell(19);
+			$pdf->SetFont('Arial', 'B', 16);
+			$pdf->Cell(185, 2, 'DINAS PENDIDIKAN', 0, 1, 'C');
+			$pdf->Ln(5);
+			$pdf->Cell(19);
+			$pdf->SetFont('Arial', 'B', 18);
+			$pdf->Cell(185, 2, 'SMK NEGERI 1 GARUT', 0, 1, 'C');
+			$pdf->Ln(4);
+			$pdf->Cell(19);
+			$pdf->SetFont('Arial', 'B', 10);
+			$pdf->SetFont('');
+			$pdf->Cell(185, 2, 'Jalan Cimanuk No. 309 A Telp (0262) 233316', 0, 1, 'C');
+			$pdf->Ln(2);
+			$pdf->Cell(19);
+			$pdf->Cell(180, 2, 'Fax: (0262) 233316 Website : smknegeri1garut.sch.id Email : smkn1garut@ymail.com', 0, 1, 'C');
+			$pdf->Ln(2);
+			$pdf->Cell(19);
+			$pdf->Cell(185, 2, 'Tarogong Kidul - Garut 44151', 0, 1, 'C');
+			$pdf->Ln();
+			$pdf->SetFont('Arial', 'B', 12);
+			$pdf->Ln(8);
+			$pdf->Cell(185, 2, 'BERITA ACARA PENILAIAN TENGAH SEMESTER GANJIL', 0, 1, 'C');
+			$pdf->Ln(3);
+			$pdf->Cell(185, 2, 'TAHUN PELAJARAN 2022-2023', 0, 1, 'C');
+			$pdf->Ln(10);
+			$pdf->Cell(12);
+			$pdf->SetFont('Times', '', 12);
+			$pdf->MultiCell(170, 7, 'Pada hari ini ' . $databa['tanggal'] . ' tanggal ' . terbilang($splittgl[2]) . ' bulan ' . terbilang($splittgl[1]) . ' tahun ' . terbilang($splittgl[0]) . '. Telah dilaksanakan Ujian Sekolah Tahun Pelajaran 2020-2021 mulai dari pukul ' . $databa['mulai'] . ' sampai dengan pukul ' . $databa['sampai'] . ' Pada :', 0, 'J', FALSE);
+			$pdf->Ln(5);
+			$pdf->Cell(20);
+			$pdf->Cell(10, 0, 'Kelas', 0, 1);
+			$pdf->Cell(100);
+			$pdf->Cell(10, 0, ':', 0, 1);
+			$pdf->Cell(102);
+			$pdf->Cell(10, 0, $databa['kelas'], 0, 1);
+			$pdf->Ln(7);
+			$pdf->Cell(20);
+			$pdf->Cell(10, 0, 'Mata Pelajaran', 0, 1);
+			$pdf->Cell(100);
+			$pdf->Cell(10, 0, ':', 0, 1);
+			$pdf->Cell(102);
+			$pdf->Cell(10, 0, $databa['mapel'], 0, 1);
+			$pdf->Ln(7);
+			$pdf->Cell(20);
+			$pdf->Cell(10, 0, 'Jumlah Peserta didik yang hadir', 0, 1);
+			$pdf->Cell(100);
+			$pdf->Cell(10, 0, ':', 0, 1);
+			$pdf->Cell(102);
+			$pdf->Cell(10, 0, $jmlhadir . ' Peserta didik', 0, 1);
+			$pdf->Ln(7);
+			$pdf->Cell(20);
+			$pdf->Cell(10, 0, 'Jumlah Peserta didik yang tidak hadir', 0, 1);
+			$pdf->Cell(100);
+			$pdf->Cell(10, 0, ':', 0, 1);
+			$pdf->Cell(102);
+			$pdf->Cell(10, 0, $jmlabsen . ' Peserta didik', 0, 1);
+			$pdf->Ln(7);
+			$pdf->Cell(20);
+			$pdf->Cell(10, 0, 'Nama/Nomor Peserta didik yang tidak hadir', 0, 1);
+			$pdf->Cell(100);
+			$pdf->Cell(10, 0, ':', 0, 1);
+			$pdf->Ln(7);
+			$pdf->Cell(20);
+			$pdf->MultiCell(150, 10, $databa['absen'], 1, 'J', FALSE);
+			$pdf->Ln(7);
+			$pdf->Cell(20);
+			$pdf->Cell(10, 0, 'Catatan selama pelaksanaan ujian', 0, '1');
+			$pdf->Cell(100);
+			$pdf->Cell(10, 0, ':', 0, 1);
+			$pdf->Ln(7);
+			$pdf->Cell(20);
+			$pdf->MultiCell(150, 10, $databa['catatan'], 1, 'J', FALSE);
+			$pdf->Ln(7);
+			$pdf->Cell(12);
+			$pdf->MultiCell(170, 7, 'Demikian berita acara Pelaksanaan Ujian Sekolah ini dibuat dengan sesungguhnya.', 0, 'J', FALSE);
+			$pdf->SetFont('Times', 'B', '12');
+			$pdf->SetFont('');
+			$pdf->Ln(10);
+			$pdf->Cell(115, 6, '', 0, 0, 'C');
+			$pdf->Cell(10, 6, 'Garut, ' . tgl_indo($databa['tanggal']), 0, 0, 'L');
+			$pdf->Ln();
+			$pdf->Cell(115, 6, '', 0, 0, 'C');
+			$pdf->Cell(10, 6, 'Pengawas,', 0, 0, 'L');
+			$pdf->Ln();
+			$pdf->Ln(20);
+			$pdf->SetFont('Times', 'BU', '12');
+			$pdf->Cell(115, 5, '', 0, 0, 'C');
+			$pdf->Cell(10, 5, $databa['nama'], 0, 0, 'L');
+			// $dataURI    = $databa['ttd'];
+			// $dataPieces = explode(',', $dataURI);
+			// if ($dataPieces[0] == "image/png;base64") {
+			// 	$encodedImg = $dataPieces[1];
+			// 	$decodedImg = base64_decode($encodedImg);
 
-		if (empty($_FILES["atp"]["name"])) {
-			$this->session->set_flashdata('pesan', '<div class="alert alert-danger" role="alert">File Harus di Upload</div>');
-			redirect('administrator');
-		} else if (!in_array($fileType, $allowTypes)) {
-			$this->session->set_flashdata('pesan', '<div class="alert alert-danger" role="alert">Type File harus sesuai</div>');
-			redirect('administrator');
-		} else {
-			$namafile = $task_id . '-' . date('YmdHis') . "." . $fileType;
-			$target_dir = "./public/files/atp/";
-			$target_file = $target_dir . $namafile;
-			if (move_uploaded_file($_FILES["atp"]["tmp_name"], $target_file)) {
-				$data = [
-					'task_id' => $task_id,
-					'file' => $namafile,
-				];
-				$this->db->insert('atps', $data);
-				$this->session->set_flashdata('pesan', '<div class="alert alert-success" role="alert">Data Anda Berhasil di Simpan</div>');
-				redirect('administrator');
-			} else {
-				$this->session->set_flashdata('pesan', '<div class="alert alert-danger" role="alert">Upload file Gagal</div>');
-				redirect('administrator');
-			}
-		}
-	}
-	public function addmodul()
-	{
-		$task_id = $this->input->post('task_id');
-		$fileName = basename($_FILES["modul"]["name"]);
-		$fileType = pathinfo($fileName, PATHINFO_EXTENSION);
-		$allowTypes = array('pdf', 'docx', 'PDF', 'DOCX', 'zip', 'ZIP', 'rar', 'RAR');
+			// 	//  Check if image was properly decoded
+			// 	if ($decodedImg !== false) {
+			// 		if (file_put_contents('ttdba.png', $decodedImg) !== false) {
+			// 			$pdf->Image('ttdba.png', 115, 193, 90);
+			// 		}
+			// 	}
+			// }
 
-		if (empty($_FILES["modul"]["name"])) {
-			$this->session->set_flashdata('pesan', '<div class="alert alert-danger" role="alert">File Harus di Upload</div>');
-			redirect('administrator');
-		} else if (!in_array($fileType, $allowTypes)) {
-			$this->session->set_flashdata('pesan', '<div class="alert alert-danger" role="alert">Type File harus sesuai</div>');
-			redirect('administrator');
+			$pdf->SetMargins(3, 3, 3);
+			$pdf->Output();
 		} else {
-			$namafile = $task_id . '-' . date('YmdHis') . "." . $fileType;
-			$target_dir = "./public/files/modul/";
-			$target_file = $target_dir . $namafile;
-			if (move_uploaded_file($_FILES["modul"]["tmp_name"], $target_file)) {
-				$data = [
-					'task_id' => $task_id,
-					'file' => $namafile,
-				];
-				$this->db->insert('moduls', $data);
-				$this->session->set_flashdata('pesan', '<div class="alert alert-success" role="alert">Data Anda Berhasil di Simpan</div>');
-				redirect('administrator');
-			} else {
-				$this->session->set_flashdata('pesan', '<div class="alert alert-danger" role="alert">Upload file Gagal</div>');
-				redirect('administrator');
-			}
-		}
-	}
-	public function delatp()
-	{
-		$ya = $this->input->post('ya');
-		$atp_id = $this->input->post('atp_id');
-		$atp = $this->Partisipant_model->getATPByID($atp_id);
-		if ($ya) {
-			if ($atp_id) {
-				$this->db->delete('atps', array('id' => $atp_id));
-				unlink('./public/files/atp/' . $atp['file']);
-				$this->session->set_flashdata('pesan', '<div class="alert alert-success" role="alert">Data telah dihapus</div>');
-				redirect('administrator');
-			} else {
-				$this->session->set_flashdata('pesan', '<div class="alert alert-warning" role="alert">Data tidak tersedia</div>');
-				redirect('administrator');
-			}
-		} else {
-			$this->session->set_flashdata('pesan', '<div class="alert alert-danger" role="alert">Silahkan konfirmasi hapus</div>');
-			redirect('administrator');
-		}
-	}
-	public function delmod()
-	{
-		$ya = $this->input->post('ya');
-		$mod_id = $this->input->post('mod_id');
-		$mod = $this->Partisipant_model->getMODByID($mod_id);
-		if ($ya) {
-			if ($mod_id) {
-				$this->db->delete('moduls', array('id' => $mod_id));
-				unlink('./public/files/modul/' . $mod['file']);
-				$this->session->set_flashdata('pesan', '<div class="alert alert-success" role="alert">Data telah dihapus</div>');
-				redirect('administrator');
-			} else {
-				$this->session->set_flashdata('pesan', '<div class="alert alert-warning" role="alert">Data tidak tersedia</div>');
-				redirect('administrator');
-			}
-		} else {
-			$this->session->set_flashdata('pesan', '<div class="alert alert-danger" role="alert">Silahkan konfirmasi hapus</div>');
-			redirect('administrator');
-		}
-	}
-	public function delttd()
-	{
-		$ya = $this->input->post('ya');
-		$ttd_id = $this->input->post('ttd_id');
-		if ($ya) {
-			if ($ttd_id) {
-				$this->db->delete('absenses', array('id' => $ttd_id));
-				$this->session->set_flashdata('pesan', '<div class="alert alert-success" role="alert">Data telah dihapus</div>');
-				redirect('administrator');
-			} else {
-				$this->session->set_flashdata('pesan', '<div class="alert alert-warning" role="alert">Data tidak tersedia</div>');
-				redirect('administrator');
-			}
-		} else {
-			$this->session->set_flashdata('pesan', '<div class="alert alert-danger" role="alert">Silahkan konfirmasi hapus</div>');
 			redirect('administrator');
 		}
 	}
