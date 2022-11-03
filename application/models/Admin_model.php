@@ -26,6 +26,14 @@ class Admin_model extends CI_model
         $this->db->where('id', $id);
         return $this->db->get()->row_array();
     }
+    public function getTTDPes($id,$pes)
+    {
+        $this->db->select('ttd');
+        $this->db->from('daftar_hadir');
+        $this->db->where('id_ba', $id);
+        $this->db->where('id_peserta', $pes);
+        return $this->db->get()->row_array();
+    }
     public function getCountPeserta($kelas, $ruang)
     {
         $this->db->select('*');
@@ -34,6 +42,15 @@ class Admin_model extends CI_model
         $this->db->where('ruang', $ruang);
         return $this->db->get()->num_rows();
     }
+    public function getListPeserta($kelas, $ruang)
+    {
+        $this->db->select('*');
+        $this->db->from('peserta');
+        $this->db->where('kelas', $kelas);
+        $this->db->where('ruang', $ruang);
+        $this->db->order_by('name', 'asc');
+        return $this->db->get()->result_array();
+    }
     public function getPresentPeserta($idba)
     {
         $this->db->select('*');
@@ -41,6 +58,12 @@ class Admin_model extends CI_model
         $this->db->where('id_ba', $idba);
         $this->db->group_by('id_peserta');
         return $this->db->get()->num_rows();
+    }
+    public function getPeserta()
+    {
+        $this->db->select('name,nopes');
+        $this->db->from('peserta');
+        return $this->db->get()->result_array();
     }
     public function getRuangPeserta()
     {
@@ -62,11 +85,5 @@ class Admin_model extends CI_model
         $this->db->from('peserta');
         $this->db->where('kelas', $kelas);
         return $this->db->get()->result();
-    }
-    public function getPeserta()
-    {
-        $this->db->select('name,nopes');
-        $this->db->from('peserta');
-        return $this->db->get()->result_array();
     }
 }

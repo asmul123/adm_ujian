@@ -35,6 +35,7 @@
                                         <th rowspan="2" class="text-center">Kelas</th>
                                         <th rowspan="2" class="text-center">Mata Pelajaran</th>
                                         <th rowspan="2" class="text-center">Jumlah Hadir</th>
+                                        <th rowspan="2" class="text-center">Jumlah Absen</th>
                                         <th colspan="2" class="text-center">Cetak</th>
                                     </tr>
                                     <tr>
@@ -47,6 +48,8 @@
                                     $no = 0;
                                     $allba = $this->Admin_model->getBA();
                                     foreach ($allba as $ab) :
+                                        $pesertaabsen = explode("#", $ab['absen']);
+                                        $jmlabsen = count($pesertaabsen) - 1;
                                         $countpes = $this->Admin_model->getPresentPeserta($ab['id']);
                                     ?>
                                         <tr>
@@ -56,6 +59,7 @@
                                             <td><?= $ab['kelas']; ?></td>
                                             <td><?= $ab['mapel']; ?></td>
                                             <td><?= $countpes; ?></td>
+                                            <td><?= $jmlabsen; ?></td>
                                             <td><a href="<?= base_url() ?>administrator/cetakba/<?= $ab['id'] ?>" target="_blank"> <i class="fa fa-print"></i></a></td>
                                             <td><a href="<?= base_url() ?>administrator/cetakdh/<?= $ab['id'] ?>" target="_blank"> <i class="fa fa-print"></i></a></td>
                                         </tr>
