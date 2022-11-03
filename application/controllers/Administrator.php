@@ -177,6 +177,10 @@ class Administrator extends CI_Controller
 			$pdf->SetFont('Times', 'BU', '12');
 			$pdf->Cell(115, 5, '', 0, 0, 'C');
 			$pdf->Cell(10, 5, $databa['nama'], 0, 0, 'L');
+			$pdf->Ln();
+			$pdf->Cell(115, 5, '', 0, 0, 'C');
+			$newY = $pdf->getY();
+			$posttd = $newY - 26;
 			$dataURI    = $databa['ttd'];
 			$dataPieces = explode(',', $dataURI);
 			if ($dataPieces[0] == "image/png;base64") {
@@ -186,7 +190,7 @@ class Administrator extends CI_Controller
 				//  Check if image was properly decoded
 				if ($decodedImg !== false) {
 					if (file_put_contents('ttdba.png', $decodedImg) !== false) {
-						$pdf->Image('ttdba.png', 115, 213, 90);
+						$pdf->Image('ttdba.png', 115, $posttd, 90);
 					}
 				}
 			}
